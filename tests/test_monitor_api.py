@@ -60,7 +60,7 @@ async def test_create_monitor_race_condition(db_session, client):
     result = await db_session.execute(select(Monitor))
     monitors = result.scalars().all()
 
-    assert len(monitors) == 3
+    assert len(monitors) == 1
 
 
 @pytest.mark.asyncio
