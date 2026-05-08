@@ -28,6 +28,7 @@ jobs:
           --health-retries=5
     env:
       DATABASE_URL: postgresql+asyncpg://test_user:test_password@localhost:5432/test_db
+      REDIS_URL: redis://redis:6379/0
 
     steps:
       - name: Checkout code
