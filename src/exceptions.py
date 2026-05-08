@@ -16,3 +16,11 @@ class DuplicateMonitorError(PulseError):
 class MonitorNotFoundError(PulseError):
     def __init__(self) -> None:
         super().__init__("Monitor not found", status_code=status.HTTP_404_NOT_FOUND)
+
+
+class RateLimitExceeded(PulseError):
+    def __init__(self) -> None:
+        super().__init__(
+            "Too many requests. Please wait a minute or create an account",
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+        )
