@@ -24,3 +24,8 @@ class RateLimitExceeded(PulseError):
             "Too many requests. Please wait a minute or create an account",
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
         )
+
+
+class InvalidURL(PulseError):
+    def __init__(self) -> None:
+        super().__init__("Invalid url", status_code=status.HTTP_400_BAD_REQUEST)
