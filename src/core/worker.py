@@ -31,7 +31,7 @@ async def worker(client: httpx.AsyncClient, app: FastAPI):
 
                     await asyncio.sleep(3)
                     continue
-                logger.info(f"checking {len(due_monitors)} monitors")
+                logger.info(f"checking {len(due_monitors)} monitor(s)")
 
                 tasks = [check_monitor(monitor, client) for monitor in due_monitors]
 
@@ -55,7 +55,7 @@ async def worker(client: httpx.AsyncClient, app: FastAPI):
                     session.add(probe)
 
                 await session.commit()
-                logger.info(f"Successfully processed {len(due_monitors)} probes")
+                logger.info(f"Successfully processed {len(due_monitors)} probe(s)")
 
             await asyncio.sleep(1)
     except asyncio.CancelledError:
