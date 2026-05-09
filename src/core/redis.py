@@ -8,9 +8,9 @@ redis_client = redis.from_url(url=settings.redis_url, decode_responses=True)
 class RateLimiter:
 
     _RATE_LIMIT = """
-        local current = redis.call("INCR", KEY[1])
+        local current = redis.call("INCR", KEYS[1])
         if current == 1 then
-            counter = redis.call("EXPIRE", KEY[1], ARGV[1])
+            counter = redis.call("EXPIRE", KEYS[1], ARGV[1])
         end
         return counter
 """
