@@ -10,9 +10,9 @@ class RateLimiter:
     _RATE_LIMIT = """
         local current = redis.call("INCR", KEYS[1])
         if current == 1 then
-            counter = redis.call("EXPIRE", KEYS[1], ARGV[1])
+            redis.call("EXPIRE", KEYS[1], ARGV[1])
         end
-        return counter
+        return current
 """
 
     def __init__(self, client: redis.Redis):
