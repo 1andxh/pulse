@@ -8,6 +8,7 @@ dependencies = [
     "aiosqlite>=0.22.1",
     "alembic>=1.18.4",
     "asyncpg>=0.31.0",
+    "bcrypt>=5.0.0",
     "fastapi[standard]>=0.135.2",
     "pwdlib>=0.3.0",
     "pyjwt>=2.12.1",
