@@ -38,7 +38,7 @@ rate_limiter = RateLimiter(redis_client)
 
 
 class TokenBlockList:
-    JTI_EXPIRY = timedelta(days=7)
+    JTI_EXPIRY = 7
 
     def __init__(self, blocklist: redis.Redis):
         self.blocklist = blocklist
