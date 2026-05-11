@@ -8,6 +8,7 @@ import logging
 JWT_SECRET = settings.jwt_secret
 JWT_ALGORITHM = settings.jwt_algorithm
 ACCESS_TOKEN_EXPIRY = 3600
+REFRESH_TOKEN_EXPIRY_DAYS = 7
 
 
 def hash_password(password: str) -> str:
