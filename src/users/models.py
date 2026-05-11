@@ -2,13 +2,19 @@
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, DateTime, func, Boolean
+from sqlalchemy import String, DateTime, func, Boolean, Enum as SAEnum
 from datetime import datetime
 from typing import TYPE_CHECKING
 from src.db.base import Base
+from enum import Enum
 
 # if TYPE_CHECKING:
 #     pass
+
+
+class UserRole(str, Enum):
+    USER = "user"
+    ADMIN = "admin"
 
 
 class User(Base):
@@ -20,6 +26,9 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    role: Mapped[UserRole] = mapped_column(
+        SAEnum(UserRole, native_enum=False), default=UserRole.USER, nullable=False
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
