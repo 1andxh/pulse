@@ -1,4 +1,5 @@
 import redis.asyncio as redis
+from datetime import timedelta
 
 from src.config import settings
 
@@ -34,3 +35,20 @@ class RateLimiter:
 
 
 rate_limiter = RateLimiter(redis_client)
+
+
+class TokenBlockList:
+    JTI_EXPIRY = timedelta(days=7)
+
+    def __init__(self, blocklist: redis.Redis):
+        self.blocklist = blocklist
+
+    async def add_token_to_blocklist(self, jti: str, expiry: int | None = None) -> None:
+        ttl = expiry if expiry and expiry > 0 else self.JTI_EXPIRY
+        await self.blocklist.set(name=jti, value="", ex=ttl)
+
+    async def token_in_blocklist(self, jti: str) -> bool:
+        return await self.blocklist.get(name=jti) is not None
+
+
+token_blocklist = TokenBlockList(redis_client)
