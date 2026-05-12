@@ -56,3 +56,24 @@ class UserService:
 
 
 user_service = UserService()
+
+
+class OAuthService:
+    async def get_user_by_google_sub(self, google_sub: str, session: AsyncSession) -> User | None:
+        stmt = await session.execute(select(User).where(User.google_sub == google_sub))
+        return stmt.scalar_one_or_none()
+    
+    async def handler_google_user(self, google_user: User, session: AsyncSession) -> User:
+        if not google_user.google_sub:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid Google payload: missing 'sub'."
+            )
+        exsting =  await self.get_user_by_google_sub(google_user.google_sub, session)
+        if exsting:
+            return exsting
+        
+        email_user = await user_service.get_user_by_email(google_user.email, session)
+        if email_user:
+            
+

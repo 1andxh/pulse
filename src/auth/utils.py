@@ -46,3 +46,6 @@ def decode_token(token: str) -> dict | None:
     except jwt.PyJWTError as e:
         logging.exception(e)
         return None
+
+
+# oauth
