@@ -11,7 +11,10 @@ class Settings(BaseSettings):
     google_client_id: str
     google_client_secret: str
     google_redirect_url: str
+    # middleware
     middleware_secret: str
+    # frontend_url: str
+    api_url: str
 
     model_config = SettingsConfigDict(
         env_file=".env", extra="ignore", case_sensitive=False
