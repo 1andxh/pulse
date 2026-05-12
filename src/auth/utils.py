@@ -1,4 +1,5 @@
 from src.config import settings
+from authlib.integrations.starlette_client import OAuth
 import uuid
 from datetime import datetime, timezone, timedelta
 import bcrypt
@@ -49,3 +50,14 @@ def decode_token(token: str) -> dict | None:
 
 
 # oauth
+oauth = OAuth()
+
+oauth.register(
+    name="google",
+    client_id=settings.google_client_id,
+    client_secret=settings.google_client_secret,
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={
+        "scope": "openid email profile",
+    },
+)
