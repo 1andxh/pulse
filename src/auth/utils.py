@@ -14,6 +14,20 @@ ACCESS_TOKEN_EXPIRY = 3600
 REFRESH_TOKEN_EXPIRY_DAYS = 7
 
 
+# oauth
+oauth = OAuth()
+
+oauth.register(
+    name="google",
+    client_id=settings.google_client_id,
+    client_secret=settings.google_client_secret,
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={
+        "scope": "openid email profile",
+    },
+)
+
+
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
@@ -51,15 +65,28 @@ def decode_token(token: str) -> dict | None:
         return None
 
 
-# oauth
-oauth = OAuth()
+def set_auth_cookies(response: Response, tokens: Token) -> None:
+    cookie_config = {
+        "httponly": True,
+        "samesite": "lax",
+        "secure": False,  # nts: always TRUE in prod
+    }
+    response.set_cookie(
+        key="access_token",
+        value=tokens.access_token,
+        max_age=ACCESS_TOKEN_EXPIRY,
+        **cookie_config,
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=tokens.refresh_token,
+        max_age=REFRESH_TOKEN_EXPIRY_DAYS * 24 * 60 * 60,
+        **cookie_config,
+    )
 
-oauth.register(
-    name="google",
-    client_id=settings.google_client_id,
-    client_secret=settings.google_client_secret,
-    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
-    client_kwargs={
-        "scope": "openid email profile",
-    },
-)
+    # usage -- /callback
+    tokens = auth_service.generate_token_pair(user)  # type: ignore
+
+    redirect = RedirectResponse(url=f"{settings.frontend_url}/stats")  # type: ignore
+    set_auth_cookies(redirect, tokens)
+    # return redirect
