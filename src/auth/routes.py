@@ -57,3 +57,6 @@ async def login_via_google(request: Request):
 @auth_router.get("/callback/google")
 async def google_callback(request: Request, session: _session):
     return await auth_service.oauth_callback(request, session)
+
+
+#
