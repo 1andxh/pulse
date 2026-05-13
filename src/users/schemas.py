@@ -5,6 +5,7 @@ import datetime
 
 
 class UserCreate(BaseModel):
+    full_name: str
     email: EmailStr
     password: str = Field(min_length=8, max_length=255)
 
@@ -26,6 +27,7 @@ class UserLogin(BaseModel):
 
 class UserResponse(BaseModel):
     id: uuid.UUID
+    full_name: str
     email: str
     is_verified: bool
     created_at: datetime.datetime
@@ -36,7 +38,7 @@ class UserResponse(BaseModel):
 class GoogleUser(BaseModel):
     google_sub: str
     email: str
-    name: str
+    full_name: str
 
     class Config:
         from_attributes = True
