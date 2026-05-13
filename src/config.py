@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     mail_port: int
     mail_server: str
     mail_from: str
+    mail_from_name: str
     mail_starttls: bool = True
     mail_ssl_tls: bool = False
     use_credentials: bool = True
