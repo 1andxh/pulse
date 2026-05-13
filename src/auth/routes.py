@@ -43,7 +43,7 @@ async def revoke_token(credentials: HTTPAuthorizationCredentials = Depends(_secu
     return await auth_service.revoke_token(credentials.credentials)
 
 
-@auth_router.post("/refresh")
+@auth_router.post("/refresh", response_model=Token)
 async def refresh_token(credentials: HTTPAuthorizationCredentials = Depends(_security)):
     return await auth_service.refresh_tokens(credentials.credentials)
 
