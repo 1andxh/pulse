@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     google_redirect_uri: str
     # middleware
     middleware_secret: str
-    # frontend_url: str
+    frontend_url: str
     api_url: str
 
     model_config = SettingsConfigDict(
