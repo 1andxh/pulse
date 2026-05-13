@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import SecretStr
 
 
 class Settings(BaseSettings):
@@ -15,6 +16,18 @@ class Settings(BaseSettings):
     middleware_secret: str
     frontend_url: str
     api_url: str
+    # mail
+    mail_username: str
+    mail_password: SecretStr
+    mail_port: int
+    mail_server: str
+    mail_from: str
+    mail_starttls: bool = True
+    mail_ssl_tls: bool = False
+    use_credentials: bool = True
+    validate_certs: bool = True
+    email_secret: str
+    password_reset_secret: str
 
     model_config = SettingsConfigDict(
         env_file=".env", extra="ignore", case_sensitive=False
