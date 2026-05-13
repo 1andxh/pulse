@@ -1,10 +1,17 @@
 from pydantic import BaseModel, EmailStr, Field
+from src.users.schemas import UserResponse
 
 
 class Token(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    user: UserResponse
 
 
 class PasswordResetRequest(BaseModel):
