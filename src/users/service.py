@@ -7,6 +7,7 @@ from .models import User
 from .utils import normalize_email
 from src.auth.utils import hash_password
 from .schemas import UserCreate, GoogleUser
+from src.auth.schemas import PasswordResetConfirm
 
 REFRESH_TOKEN_EXPIRY_DAYS = 7
 
@@ -21,6 +22,17 @@ class UserService:
 
     async def _verify_user(self, user: User, session: AsyncSession) -> User:
         user.is_verified = True
+        await session.flush()
+        await session.refresh(user)
+        return user
+
+    async def _reset_password(
+        self,
+        user: User,
+        new_password: str,
+        session: AsyncSession,
+    ) -> User | None:
+        user.hashed_password = new_password
         await session.flush()
         await session.refresh(user)
         return user
