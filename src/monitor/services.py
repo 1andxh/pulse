@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import desc, select
+from sqlalchemy import desc, select, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -69,3 +69,16 @@ class MonitorService:
         await self.session.delete(monitor)
         await self.session.commit()
         return
+
+    async def get_user_stats(self, user_id: uuid.UUID) -> dict:
+        stmt = await self.session.execute(
+            select(
+                func.count(Monitor.id).label("total_monitors"),
+                func.count(Monitor.id)
+                .filter(Monitor.is_active == True)
+                .label("active_monitors"),
+            ).where(Monitor.owner_id == user_id)
+        )
+        stats = stmt.one()
+
+        return {}
