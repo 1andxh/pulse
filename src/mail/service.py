@@ -21,7 +21,7 @@ class MailService:
         dashboard_link = ""
         html_content = template.render(
             {
-                "user_name": new_user.name,
+                "username": new_user.name,
                 "link": dashboard_link,
                 "year": datetime.now(timezone.utc).year,
             }
