@@ -55,7 +55,7 @@ async def get_user(current_user=Depends(get_current_user)):
 
 
 # verification/password routes
-@auth_router.get("/verify-user")
+@auth_router.get("/verify-user/{token}")
 async def verify_user(token: str, session: _session):
     return await auth_service.verify_user_account(token, session)
 
@@ -65,7 +65,7 @@ async def request_password_reset(payload: PasswordResetRequest, service: _servic
     return await service.send_password_reset(payload)
 
 
-@auth_router.post("/reset-password")
+@auth_router.post("/reset-password/{token}")
 async def reset_password(token: str, password: PasswordResetConfirm, session: _session):
     return await auth_service.password_reset(token, password, session)
 
