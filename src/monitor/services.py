@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import desc, select, func, case, join
+from sqlalchemy import desc, select, func, cast, Integer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -72,32 +72,29 @@ class MonitorService:
         return
 
     async def get_user_stats(self, user_id: uuid.UUID) -> dict:
-        stmt = await self.session.execute(
+        monitor_stmt = select(
+            func.count(Monitor.id).label("total_monitors"),
+            func.count(Monitor.id)
+            .filter(Monitor.is_active == True)
+            .label("active_monitors"),
+        ).where(Monitor.owner_id == user_id)
+        stats = (await self.session.execute(monitor_stmt)).one()
+
+        probe_stmt = (
             select(
-                func.count(Monitor.id).label("total_monitors"),
-                func.count(Monitor.id)
-                .filter(Monitor.is_active == True)
-                .label("active_monitors"),
-            ).where(Monitor.owner_id == user_id)
+                func.avg(cast(Probe.is_up, Integer)).label("uptime"),
+                func.avg(Probe.latency_ms).label("avg_latency"),
+            )
+            .join(Monitor, Probe.monitor_id == Monitor.id)
+            .where(Monitor.owner_id == user_id)
         )
-        stats = stmt.one()
-        uptime_result = await self.session.execute(
-            select(
-                func.avg(
-                    case((Probe.is_up == True, 100), else_=0).label(
-                        "uptime_percentage"
-                    ),
-                    func.avg(Probe.latency_ms).label("avg_response_time"),
-                ).join(Monitor, Probe.monitor_id == Monitor.id)
-            ).where(Monitor.owner_id == user_id),
-        )
-        uptime = uptime_result.one()
+        uptime = (await self.session.execute(probe_stmt)).one()
 
         return {
             "total_monitors": stats.total_monitors,
             "active_monitors": stats.active_monitors,
-            "uptime_percentage": round(float(uptime.uptime_percentage or 0), 2),
-            "average_response_time": round(float(uptime.avg_response_time or 0), 2),
+            "uptime_percentage": round((uptime.uptime or 0.0) * 100, 2),
+            "average_response_time": round(float(uptime.avg_latency or 0), 2),
         }
 
     async def get_all_active_monitors(self) -> list[Monitor]:
