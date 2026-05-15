@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from authlib.integrations.starlette_client import OAuthError
 from fastapi import HTTPException, Request, status
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config import settings
@@ -196,12 +196,10 @@ class AuthService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
             )
         if user.is_verified:
-            return JSONResponse(
-                content={"message": "Account already verified"},
-                status_code=status.HTTP_200_OK,
-            )
+            return {"message": "Account already verified"}
+
         await service._verify_user(user, session)
-        return {"message": "Account verified successfullly"}
+        return {"message": "Account verified successfully"}
 
     async def password_reset(
         self, token: str, password: PasswordResetConfirm, session: AsyncSession
@@ -231,16 +229,13 @@ class AuthService:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Passwords do not match"
             )
-        password_hash = hash_password(password.confirm_new_password)
+        password_hash = hash_password(password.new_password)
         await service._reset_password(
             user,
             password_hash,
             session,
         )
-        return JSONResponse(
-            content={"message": "Password reset successful"},
-            status_code=status.HTTP_200_OK,
-        )
+        return ({"message": "Password reset successful"},)
 
 
 auth_service = AuthService()
