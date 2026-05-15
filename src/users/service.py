@@ -54,7 +54,11 @@ class UserService:
                 detail="Email already registered",
             )
 
-        new_user = User(email=email, hashed_password=hash_password(user_data.password))
+        new_user = User(
+            email=email,
+            hashed_password=hash_password(user_data.password),
+            name=user_data.name,
+        )
 
         session.add(new_user)
 
