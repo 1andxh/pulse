@@ -9,6 +9,8 @@ from .schemas import ProbeHistoryResponse
 from .services import ProbeService
 from src.monitor.dependency import get_monitor_service
 from src.monitor.services import MonitorService
+from src.users.models import User
+from src.auth.dependencies import get_current_verified_user
 
 probe_router = APIRouter()
 
@@ -24,6 +26,6 @@ async def _get_probe_service(
 async def get_probe_history(
     monitor_id: uuid.UUID,
     service: Annotated[ProbeService, Depends(_get_probe_service)],
-    user_id: uuid.UUID,
+    curent_user: User = Depends(get_current_verified_user),
 ):
-    return await service.get_latest_probes(monitor_id, user_id)
+    return await service.get_latest_probes(monitor_id, curent_user.id)
