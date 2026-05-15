@@ -60,7 +60,7 @@ async def verify_user(token: str, session: _session):
     return await auth_service.verify_user_account(token, session)
 
 
-@auth_router.post("/request-password-reset")
+@auth_router.post("/request-password-reset/")
 async def request_password_reset(payload: PasswordResetRequest, service: _service):
     return await service.send_password_reset(payload)
 

@@ -29,7 +29,7 @@ class UserLogin(BaseModel):
 
 class UserResponse(BaseModel):
     id: uuid.UUID
-    name: str
+    name: str | None = None
     email: str
     role: UserRole
     avatar_url: str | None
