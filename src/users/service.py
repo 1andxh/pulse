@@ -1,15 +1,15 @@
 from fastapi import status, HTTPException
-from datetime import datetime
-from sqlalchemy import select, func
+from sqlalchemy import select, func, case, desc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from .models import User
 from .utils import normalize_email
 from src.auth.utils import hash_password
 from .schemas import UserCreate, GoogleUser
-from src.auth.schemas import PasswordResetConfirm
-
-REFRESH_TOKEN_EXPIRY_DAYS = 7
+from src.monitor.models import Monitor
+from src.probe.models import Probe
+from src.exceptions import UserNotFoundError
+import uuid
 
 
 class UserService:
@@ -110,3 +110,57 @@ class OAuthService:
 
 
 oauth_service = OAuthService()
+
+
+class AdminService:
+    async def get_platform_stats(self, session: AsyncSession) -> dict:
+        users = await session.scalar(select(func.count(User.id)))
+        monitors = await session.scalar(select(func.count(Monitor.id)))
+        probes = await session.scalar(select(func.count(Probe.id)))
+
+        uptime_result = await session.execute(
+            select(
+                func.avg(case((Probe.is_up == True, 100), else_=0)).label("uptime"),
+                func.avg(Probe.latency_ms).label("avg_response"),
+            )
+        )
+
+        stats = uptime_result.one()
+
+        return {
+            "total_users": users,
+            "total_monitors": monitors,
+            "total_probes_recorded": probes,
+            "overall_uptime_percentage": round(float(stats.uptime or 0), 2),
+            "average_response_time": round(float(stats.avg_response or 0), 2),
+        }
+
+    async def get_user_with_monitor_count(self, session: AsyncSession) -> list[dict]:
+        stmt = await session.execute(
+            select(User, func.count(Monitor.id).label("monitor_count"))
+            .outerjoin(Monitor, Monitor.owner_id == User.id)
+            .group_by(User.id)
+            .order_by(desc(User.created_at))
+        )
+
+        return [
+            {
+                "id": user.id,
+                "email": user.email,
+                "name": user.name,
+                "role": user.role,
+                "monitor_count": count,
+                "created_at": user.created_at,
+            }
+            for user, count in stmt.all()
+        ]
+
+    async def delete_user(self, user_id: uuid.UUID, session: AsyncSession) -> None:
+        user = await session.get(User, user_id)
+        if not user:
+            raise UserNotFoundError
+        await session.delete(user)
+        await session.flush()
+
+
+admin_service = AdminService()
