@@ -49,9 +49,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Pulse Monitor",
+    title="Probey",
     lifespan=lifespan,
-    description="Pulse is a lightweight, reliable uptime monitor",
+    description="A lightweight, reliable uptime monitor",
     openapi_url="/docs/openapi.json",
 )
 
