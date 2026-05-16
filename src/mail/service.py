@@ -23,7 +23,7 @@ class MailService:
         html_content = template.render(
             {
                 "username": new_user.name,
-                "link": settings.frontend_url + dashboard_link,
+                "dashboard_link": settings.frontend_url + dashboard_link,
                 "year": datetime.now(timezone.utc).year,
             }
         )
