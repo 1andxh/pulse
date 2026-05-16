@@ -196,10 +196,12 @@ class AuthService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
             )
         if user.is_verified:
-            return {"message": "Account already verified"}
+            return RedirectResponse(
+                url=f"{settings.frontend_url}/login?verified=already"
+            )
 
         await service._verify_user(user, session)
-        return {"message": "Account verified successfully"}
+        return RedirectResponse(url=f"{settings.frontend_url}/login?verified=true")
 
     async def password_reset(
         self, token: str, password: PasswordResetConfirm, session: AsyncSession
