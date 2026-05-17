@@ -5,9 +5,9 @@ from fastapi import BackgroundTasks
 
 from src.auth.schemas import PasswordResetRequest
 from src.config import settings
+from src.core.logger import logger
 from src.templates import templates
 from src.users.models import User
-from src.core.logger import logger
 
 from .config import create_message, mail
 from .utils import mail_utils
