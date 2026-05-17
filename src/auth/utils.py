@@ -25,6 +25,7 @@ oauth.register(
     client_kwargs={
         "scope": "openid email profile",
     },
+    jwks_uri="https://www.googleapis.com/oauth2/v3/certs",
 )
 
 
