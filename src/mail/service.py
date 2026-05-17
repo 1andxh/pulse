@@ -7,6 +7,7 @@ from src.auth.schemas import PasswordResetRequest
 from src.config import settings
 from src.templates import templates
 from src.users.models import User
+from src.core.logger import logger
 
 from .config import create_message, mail
 from .utils import mail_utils
@@ -36,7 +37,16 @@ class MailService:
             subject="Welcome to Probey — verify your email",
             body=html_content,
         )
-        self.bg_task.add_task(mail.send_message, message)
+
+        async def mail_logging():
+            try:
+                await mail.send_message(message)
+            except Exception as e:
+                logger.error(
+                    f"Failed to send email to {new_user.email}: {e}", exc_info=True
+                )
+
+        self.bg_task.add_task(mail_logging)
 
     async def send_password_reset(self, email: PasswordResetRequest):
         token = mail_utils.create_password_reset_token(data={"email": email.email})
