@@ -41,7 +41,7 @@ class MailService:
     async def send_password_reset(self, email: PasswordResetRequest):
         token = mail_utils.create_password_reset_token(data={"email": email.email})
         safe_token = quote(token, safe="")
-        reset_link = f"https://127.0.0.1:8000/auth/reset-password/{safe_token}"
+        reset_link = f"{settings.api_url}/auth/reset-password/{safe_token}"
 
         template = templates.template.get_template("password_reset.html")
 
