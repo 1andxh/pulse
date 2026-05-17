@@ -7,7 +7,7 @@ from src.config import settings
 
 
 def register_middleware(app: FastAPI):
-    app.add_middleware(SessionMiddleware, settings.middleware_secret)
+    app.add_middleware(SessionMiddleware, secret_key=settings.middleware_secret)
 
     app.add_middleware(
         TrustedHostMiddleware,
